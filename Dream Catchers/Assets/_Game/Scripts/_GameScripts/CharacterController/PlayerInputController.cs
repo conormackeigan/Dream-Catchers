@@ -6,15 +6,23 @@
 
 using UnityEngine;
 using System.Collections;
+using Rewired;
 
 public class PlayerInputController : MonoBehaviour
 {
+    private Player player; // rewired player
 
     public PlayerInput Current;
 
     public float moveBufferTimer = 0;
 
     public bool locked = false;
+
+
+    void Awake()
+    {
+        player = ReInput.players.GetPlayer(0);
+    }
 
 	// Use this for initialization
 	void Start ()
@@ -28,8 +36,8 @@ public class PlayerInputController : MonoBehaviour
         if((Game_Manager.instance == null || Game_Manager.instance.isPlaying()) && !locked)
         {
             // Controls set via Unity Input Manager
-            Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-            Vector3 joy2Input = new Vector3(Input.GetAxis("Horizontal2"), 0, -Input.GetAxis("Vertical2"));
+            Vector3 moveInput = new Vector3(player.GetAxisRaw("LeftStickHorizontal"), 0, player.GetAxisRaw("LeftStickVertical"));
+            Vector3 joy2Input = new Vector3(player.GetAxis("RightStickHorizontal"), 0, -player.GetAxis("RightStickVertical"));
 
             if (Input_Manager.instance != null && Input_Manager.instance.invertCameraX)
             {
@@ -41,14 +49,15 @@ public class PlayerInputController : MonoBehaviour
                 joy2Input.z = -joy2Input.z;
             }
 
-            bool attackInput = Input.GetButtonDown("Attack");
+            bool attackInput = player.GetButtonDown("Item");
 
-            bool jumpInput = Input.GetButtonDown("Jump");
-            bool jumpHold = Input.GetButton("Jump");
-            bool rButton = Input.GetButtonDown("R");
-            bool diveInput = Input.GetButtonDown("Dive");
-            float lTrigger = Input.GetAxisRaw("LeftTrigger");
-            float rTrigger = Input.GetAxisRaw("RightTrigger");
+            bool jumpInput = player.GetButtonDown("Jump");
+            bool jumpHold = player.GetButton("Jump");
+            bool rButton = player.GetButtonDown("Swap");
+            bool lButton = player.GetButtonDown("CameraButton");
+            bool diveInput = player.GetButtonDown("Action");
+            float lTrigger = player.GetAxisRaw("CameraLeft");
+            float rTrigger = player.GetAxisRaw("CameraRight");
 
             // TODO: Change the efficiency of this; no lookup everytime
             GameObject dialogBox = GameObject.FindGameObjectWithTag("DialogBox");
@@ -66,6 +75,7 @@ public class PlayerInputController : MonoBehaviour
                 AttackInput = attackInput,
                 JumpInput = jumpInput,
                 JumpHold = jumpHold,
+                LButton = lButton,
                 RButton = rButton,
                 DiveInput = diveInput,
                 RTrigger = rTrigger,
@@ -116,7 +126,8 @@ public struct PlayerInput
 
     public bool JumpInput; // Jump
     public bool JumpHold; // Jump Height
-    public bool RButton; // Left Trigger
+    public bool RButton;
+    public bool LButton;
     public bool DiveInput;
 
     public float LTrigger;

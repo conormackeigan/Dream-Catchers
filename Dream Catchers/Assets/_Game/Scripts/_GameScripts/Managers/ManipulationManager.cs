@@ -7,6 +7,7 @@
 using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using Rewired;
 
 public class ManipulationManager : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class ManipulationManager : MonoBehaviour
 
     public static ManipulationManager instance = null;
 
+    private Player player; // rewired player
+
     void Awake()
     {
         //Check if instance already exists
@@ -50,6 +53,8 @@ public class ManipulationManager : MonoBehaviour
 
         //Sets this to not be destroyed when reloading scene
         // DontDestroyOnLoad(gameObject);
+
+        player = ReInput.players.GetPlayer(0);
     }
 
     // Use this for initialization
@@ -72,7 +77,7 @@ public class ManipulationManager : MonoBehaviour
         }
 
         // Toggles the World State upon player input
-        if (Input.GetButtonDown("Manip") && (Game_Manager.instance == null || Game_Manager.instance.isPlaying()) 
+        if (player.GetButtonDown("Swap") && (Game_Manager.instance == null || Game_Manager.instance.isPlaying()) 
             && Level_Manager.Instance.CurrentLevel != Level_Manager.Levels.HUB && !onCooldown && manipGained)
         {
             onCooldown = true;

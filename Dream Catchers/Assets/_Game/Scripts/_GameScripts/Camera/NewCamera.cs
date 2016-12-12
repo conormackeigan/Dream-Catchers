@@ -246,7 +246,7 @@ public class NewCamera : MonoBehaviour
     void UpdateMode()
     {
         // change modes if player pressed R
-        if (input.Current.RButton)
+        if (input.Current.LButton)
         {
             if (Mode == CameraMode.High)
             {
@@ -319,17 +319,19 @@ public class NewCamera : MonoBehaviour
         BaseDisplacement = (Player.transform.position - transform.position);
         BaseDisplacement.y = 0;
 
-        float align = Vector3.Cross(BaseDisplacement.normalized, Player.transform.forward).y;
+        float align = 0;
+
+        if (!collision && Mathf.Approximately(floorArc, 0f))
+        { // focus on character origin when in a collision state
+            align = Vector3.Cross(BaseDisplacement.normalized, Player.transform.forward).y;
+        }
+        
 
         // local right is inconsistent as camera looks ahead of player, so use cross of up/cam-player dir as constant right
         Vector3 right = Vector3.Cross(Vector3.up, BaseDisplacement.normalized);
 
         Target += (right * align * lookDistance);
 
-        if (collision || floorArc > 0f)
-        { // focus on character origin when in a collision state
-            align = 0f;
-        }
 
         // smoothly move target left/right in ground state or with occlusion avoidance active
         if ((machine.ground && !machine.jumping) || collision)

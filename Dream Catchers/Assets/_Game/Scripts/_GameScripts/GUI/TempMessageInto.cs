@@ -4,21 +4,24 @@
 //================================
 using UnityEngine;
 using System.Collections;
+using Rewired;
 
 public class TempMessageInto : MonoBehaviour {
 
     public string nextscene;
     public bool credits;
+    private Player player; // rewired player
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start ()
+    {
+        player = ReInput.players.GetPlayer(0);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetButtonDown("Attack") == true)
+        if (player.GetButtonDown("Item"))
         {
             changeScene();
         }
